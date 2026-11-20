@@ -8,7 +8,7 @@ Read this when the target app is web or Android: the equivalents of the iOS patt
 - **Lazy thumb.** Web: sticky bottom action bar, `100dvh` layout. Android: Material FAB or bottom-anchored button.
 - **Paved path.** Web: `<input>` defaults and `autocomplete`. Android: `DataStore` defaults and pre-selected `MaterialTimePicker`.
 - **Slot machine.** Web: Web Animations API and `canvas-confetti`. Android: Compose `AnimatedVisibility` and `HapticFeedback`.
-- **Bottomless pit.** Web: `IntersectionObserver` for infinite scroll, `<link rel=next>` fallback. Android: Paging 3 with `LazyColumn`.
+- **Bottomless pit.** Web: `IntersectionObserver` for infinite scroll, with a "Load more" button as the no-JS fallback. Android: Paging 3 with `LazyColumn`.
 - **Piggy bank.** Web: IndexedDB plus account sync. Android: Room plus Backup/Auto Backup.
 
 ## Notifications

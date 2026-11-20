@@ -1,4 +1,5 @@
 Read this for push notifications, reminders, re-engagement copy, and the permission prompt.
+If `docs/habit-plan.md` does not exist, create it from [plan-template.md](plan-template.md) before writing the Notifications section.
 
 # Notifications
 
@@ -83,4 +84,4 @@ Send one specific reason, not "we miss you":
 
 - Keep two classes: **functional** (reminders and results for something the user set up) and **marketing** (offers, promotions, upsells).
 - Put a separate "Offers and news" toggle, off by default, in the priming screen or Settings, and send marketing only when it is on.
-- The Apple 4.5.4 rule is owned by [compliance.md](compliance.md).
+- A marketing push in the plan's table → check the 4.5.4 line in [compliance.md](compliance.md), which owns the rule.

@@ -68,7 +68,7 @@ Contents: [Itch](#1-itch) · [Lazy thumb](#2-lazy-thumb) · [Paved path](#3-pave
 
 **iOS patterns.**
 - Use `.sensoryFeedback(.impact, trigger: rewardID)` and `.phaseAnimator` for reveal moments, with `Canvas`/`TimelineView` confetti.
-- Draw rewards with GameplayKit `GKMersenneTwisterRandomSource(seed:)` so draws are reproducible and loggable, and tune the distribution.
+- Draw rewards with a seeded generator so each draw is reproducible and loggable: a five-line SplitMix64 `RandomNumberGenerator`, seeded per draw with the seed stored in the event (`SystemRandomNumberGenerator` cannot be seeded). Tune the distribution there.
 - Rotate content with a `WidgetKit` timeline so the widget differs by day.
 - If any variable reward is purchasable, check [compliance.md](compliance.md) first.
 
@@ -85,7 +85,7 @@ Contents: [Itch](#1-itch) · [Lazy thumb](#2-lazy-thumb) · [Paved path](#3-pave
 
 **iOS patterns.**
 - Replace blank screens with `ContentUnavailableView` carrying an action button.
-- Load the next page via `.onAppear` of the last row, or `ScrollView` with `LazyVStack`.
+- Load the next page from `.onAppear` on the last row of a `LazyVStack`.
 - Autoplay the next item with `NavigationStack` path push or an `AVQueuePlayer`.
 - Completion screens end in a "Next" button and a `ShareLink`.
 

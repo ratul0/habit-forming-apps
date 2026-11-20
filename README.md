@@ -4,6 +4,8 @@
 
 One agent skill for designing and auditing the **daily-habit loop** of an app before and alongside its UI: why the user opens the app, what they do in one tap, and why they come back tomorrow. It turns six retention levers into a written habit plan, then hands that plan to the `/design` skill so the screens follow from the habit instead of the other way round. iOS-first, and it applies to web and Android.
 
+Boundary: this skill decides the habit loop — what happens and when. Screen layout and visual polish belong to a screen-design skill such as `ios-app-design`. It also works without Claude's `/design`: on other agents the plan gets a written Screens section instead of a board.
+
 Install on Claude Code, Cursor, Codex, and other agents that read `SKILL.md`:
 
 ```bash

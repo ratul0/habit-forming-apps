@@ -16,6 +16,12 @@ Read this when the app has friends, multiplayer, challenges, leaderboards or sha
 - Rankings: `GKLeaderboard`; entry point: `GKAccessPoint`.
 - Invites: `ShareLink` with a universal link.
 
+## Leagues and ranks
+
+- Weekly leagues: cohorts of 20-50 players with promotion and demotion at a fixed weekly reset. The reset is the appointment (Itch), the near-rival gap is the variable reward (Slot machine), and the earned division is stored value (Piggy bank).
+- Rank or ELO progression: the per-match reward that varies with the opponent. Always show the distance to the next rank, not only the global ladder.
+- Invite incentive: after the user's first win, offer a reward both inviter and invitee receive; track with `invite_sent` / `invite_converted` ([metrics.md](metrics.md)).
+
 ## Cold start
 
 Never show an empty lobby; bots or ghost replays fill it.

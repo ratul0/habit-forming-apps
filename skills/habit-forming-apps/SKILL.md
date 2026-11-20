@@ -1,10 +1,10 @@
 ---
 name: habit-forming-apps
-description: "Design or audit an app's habit loop, the retention engine behind why users open it, act in one tap and come back tomorrow: triggers and push notifications, defaults, variable rewards, no dead ends, stored value, and the habit moment. Use when starting a new app or habit feature, when users churn or don't return after day 1, when asked to make an app sticky, addictive or more engaging, when writing push or re-engagement notifications, when designing streak, reward, feed or social-challenge mechanics, or when defining D1/D7/D30 retention metrics and analytics events. iOS-first; applies to web and Android."
+description: "Design or audit an app's habit loop, the retention engine behind why users open it, act in one tap and come back tomorrow: triggers and push notifications, defaults, variable rewards, no dead ends, stored value, and the habit moment. Use when starting a new app or habit feature, when users churn or don't return after day 1, when asked to make an app sticky, addictive, more engaging or gamified, when writing push or re-engagement notifications, when designing streak, reward, feed or social-challenge mechanics, when timing a paywall or trial against the habit moment, or when defining D1/D7/D30 retention metrics and analytics events. iOS-first; applies to web and Android."
 license: MIT
 metadata:
   author: ratul0
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Habit-forming apps
@@ -33,7 +33,7 @@ The **habit moment** ties them together: the countable threshold of core actions
 | The request | Mode | Run |
 |---|---|---|
 | New app, or a new feature that should become a habit | **Design** | Steps 1 → 5 |
-| Existing app: "why don't people come back", retention review | **Audit** | Step 1, then [`references/audit.md`](references/audit.md), then steps 2 → 5 (step 2 turns the audit's fix list into lever decisions and the Board brief) |
+| Existing app: "why don't people come back", a retention review, or making an existing app stickier | **Audit** | Step 1, then [`references/audit.md`](references/audit.md), then steps 2 → 5 (step 2 turns the audit's fix list into lever decisions and the Board brief) |
 | Push notifications, reminders, re-engagement copy | **Notify** | Step 1, then [`references/notifications.md`](references/notifications.md); writes the plan's Notifications section |
 | Habit moment, retention metrics, analytics events | **Measure** | Step 1, then [`references/metrics.md`](references/metrics.md); writes the habit moment and the Metrics and events section |
 
@@ -43,7 +43,7 @@ Also load:
 |---|---|
 | Step 2 of every Design or Audit run | [`references/first-session.md`](references/first-session.md) |
 | The app has friends, multiplayer, challenges, leaderboards or sharing | [`references/social.md`](references/social.md) |
-| The target is web or Android (`levers.md` is iOS-only) | [`references/web-android.md`](references/web-android.md) |
+| The target is web or Android (`web-android.md` replaces the iOS patterns in `levers.md`) | [`references/web-android.md`](references/web-android.md) |
 
 ## 1. Read the app
 
@@ -77,14 +77,16 @@ The plan becomes a design board through Claude's `/design` skill.
 
 Exactly one candidate → use it. Several → ask the user, multiple choice, recommended first. None → the new-board branch.
 
+**How to run `/design`:** a skill named `design` in the skills list → invoke it. Otherwise, in Claude, use the **Design artifact type**: create the board by publishing with that type's `type_url` (Artifact tool, `list` with scope `types` to find it), or extend an existing board by publishing to its `url` — in both cases following the type's own instructions. Neither a `design` skill nor an Artifact tool → the fallback below.
+
 **Pick the branch:**
 
-- **New board** → run `/design` to create a board that lays out the whole UI/UX from the plan: the first session, the core loop, every end/empty/error state, and the notification surfaces.
-- **Existing board** → run `/design` on that board to add a flow named `Habit loop v<N>`, where N is one more than the highest existing `Habit loop v<k>` flow on that board, or 1 if none. Redesign existing screens only where the plan changes them, and keep them in the board's existing design system.
+- **New board** → have `/design` lay out the whole UI/UX from the plan: the first session, the core loop, every end/empty/error state, and the notification surfaces.
+- **Existing board** → read the board and list its `Habit loop v<k>` flows; add a flow named `Habit loop v<N>`, where N is one more than the highest existing k, or 1 if none. Redesign existing screens only where the plan changes them, and keep them in the board's existing design system.
 
 Pass `/design` the plan's Board brief verbatim. Boundary: screen layout, visual polish, paywall screens and reward-screen craft belong to the `ios-app-design` skill when installed; this skill decides what the loop is and when each piece appears.
 
-**Fallback** when `/design` is not available (another agent, or no Design artifacts): write a `## Screens` section in the plan instead, one entry per screen: its job, its primary action, and the next action from its end, empty, error and completion states. Step 4 then scores that list instead of a board.
+**Fallback** (no `/design` route above): write a `## Screens` section in the plan instead, one entry per screen: its job, its primary action, and the next action from its end, empty, error and completion states. Step 4 then scores that list instead of a board.
 
 Done when the board link (or "see Screens") is recorded at the top of `docs/habit-plan.md` and every Board brief line names the board frame (or Screens entry) that satisfies it.
 

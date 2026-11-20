@@ -19,7 +19,7 @@ A lever below 2 goes back to `/design` for a fix (SKILL.md step 4).
 
 ## 2. Dead-end inventory
 
-List every state that ends a flow and where it leads. A dead end is any state whose only exit is the system back button.
+List every state that ends a flow and where it leads. A dead end is any state whose only exit is back or dismiss navigation.
 
 1. Enumerate screens. For SwiftUI, list every `View` reachable from the root `NavigationStack`, `TabView`, sheet or `fullScreenCover`.
 2. For each, record four states: **end** (list exhausted), **empty** (no data), **error** (failure), **completion** (task done).

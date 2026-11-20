@@ -1,4 +1,5 @@
 Read this to find the habit moment, define retention metrics, or specify analytics events.
+If `docs/habit-plan.md` does not exist, create it from [plan-template.md](plan-template.md) before writing the Metrics and events section.
 
 # Metrics
 
