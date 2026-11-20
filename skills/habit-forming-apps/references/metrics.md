@@ -18,7 +18,7 @@ The habit moment is the number of core actions within the first N days after whi
 5. Choose the k with the largest gap, and where the gap stops growing (the "knee").
 6. Report it as "users with at least k actions in N days retain at X% vs Y%". This is a correlation, not proof of cause; confirm by testing a change that raises the share reaching k.
 
-TikTok's 260 videos is an alleged internal figure from the Kentucky AG filing (see [levers.md](levers.md)), not a benchmark for your app.
+TikTok's 260 videos, an internal figure alleged in Kentucky's 2024 complaint ([NPR](https://www.npr.org/2024/10/11/g-s1-27676/tiktok-redacted-documents-in-teen-safety-lawsuit-revealed)), is not a benchmark for your app.
 
 ## Retention measures
 
@@ -36,7 +36,7 @@ Track cohorts by install week and compare against the previous release.
 
 | Lever | Event | Properties |
 |---|---|---|
-| Itch | `session_start` | `source` (notification, widget, live_activity, shortcut, organic), `hour` |
+| Itch | `session_start` | `source` (notification, widget, live_activity, shortcut, organic), `hour`, `notif_summary` (Scheduled Summary on or off, from `scheduledDeliverySetting`) |
 | Lazy thumb | `core_action_done` | `taps_from_open`, `seconds_from_open`, `entry_point` |
 | Paved path | `default_kept` / `default_changed` | `setting`, `value` |
 | Slot machine | `reward_shown` | `reward_type`, `size`, `session_index` |
@@ -45,17 +45,32 @@ Track cohorts by install week and compare against the previous release.
 
 Add `notification_sent`, `notification_opened` and `permission_result` (granted, provisional, denied) for [notifications.md](notifications.md).
 
+### Monetization events
+
+| Event | Properties |
+|---|---|
+| `paywall_shown` | `placement`, `core_actions_before`, `habit_moment_reached` |
+| `trial_started` | `plan`, `placement` |
+
+### Social events (when social.md applies)
+
+| Event | Properties |
+|---|---|
+| `challenge_sent` | `channel`, `opponent_type` (friend, stranger, bot) |
+| `challenge_accepted` | `seconds_to_accept`, `from_notification` |
+| `invite_sent` | `channel`, `after_first_win` |
+| `invite_converted` | `channel`, `days_to_install` |
+| `turn_taken` | `match_type` (sync, async), `seconds_since_prompt` |
+
 ## Guardrail metrics
 
 Pair every growth metric with a guardrail so that a win in one doesn't hide a loss in another.
 
 | Guardrail | How to measure | Act when |
 |---|---|---|
-| Notification opt-out | Share who disable notifications in 7 days (poll `getNotificationSettings` at launch, log changes) | It rises after a push change: cut frequency |
-| Uninstall | App Store Connect uninstalls per active device, or silent-push heuristic | It rises after a release |
-| Satisfaction | One-tap 1-5 or thumbs prompt after a session, via `SKStoreReviewController`-style gating (ask only after a success) | Score falls, even as sessions rise |
+| Notification opt-out | Share who disable notifications in 7 days (`await UNUserNotificationCenter.current().notificationSettings()` at launch, log changes) | It rises after a push change: cut frequency |
+| Uninstall | Deletions ÷ Active Devices in App Store Connect App Analytics (counts only users who share analytics), or APNs `410 Unregistered` responses on your push sends | It rises after a release |
+| Satisfaction | In-app one-tap thumbs or 1-5 prompt after a completed session, at most once a week | Score falls, even as sessions rise |
 | Crash-free sessions | Crash tool | It falls below 99.5% |
 
-Use `requestReview` (`@Environment(\.requestReview)`) only after a success moment.
-
-**Web/Android.** Same events; web uses cookieless analytics where possible, Android uses Firebase Analytics events with the same names.
+Ask for an App Store review with `@Environment(\.requestReview)` only after a success moment; the system shows it at most 3 times a year.

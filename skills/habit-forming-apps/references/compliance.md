@@ -2,11 +2,11 @@ Read this before shipping (SKILL.md step 5): a short checklist of what gets an a
 
 # Compliance checklist
 
-Format: rule → what to do. Record each flag and fix in the plan's Compliance section. This is a checklist, not legal advice.
+This is the step-5 checklist: mark each line pass, flag or n/a in the plan's Compliance section. Format: rule → what to do. Not legal advice.
 
 ## Apple App Store
 
-- **4.5.4 marketing push** → send promotions only after explicit in-app opt-in, with an in-app opt-out and push never required ([guidelines](https://developer.apple.com/app-store/review/guidelines/)).
+- **4.5.4 marketing push** → send promotions only after explicit in-app opt-in, with an in-app opt-out and push never required ([guidelines](https://developer.apple.com/app-store/review/guidelines/)); implementation in [notifications.md](notifications.md).
 - **3.1.1 loot boxes and random paid items** → show the odds of each item type before purchase.
 - **1.3 Kids Category** → no links out, no purchases and no distractions outside a parental gate; no third-party analytics or ads.
 - **5.1.4 apps for kids** → use no third-party analytics or advertising in apps aimed mainly at children, and follow the 1.3 terms for any limited exception.
@@ -33,3 +33,4 @@ Format: rule → what to do. Record each flag and fix in the plan's Compliance s
 - Streaks: no loss framing; use "days played" counts that never reset, and a freeze on by default.
 - Random paid rewards: none; fixed, disclosed prices only.
 - Notifications: no engagement or re-engagement pushes; send only user-set reminders, at most once a day, never at night.
+- Social features: no open chat with strangers and no public leaderboards with real names.

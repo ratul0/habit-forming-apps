@@ -24,6 +24,14 @@ git clone https://github.com/ratul0/habit-forming-apps.git
 
 The `npx skills` CLI discovers the skill at `skills/habit-forming-apps/SKILL.md`. The skill auto-applies from its `description`; invoke it by name when you want it specifically.
 
+## Example prompts
+
+- "Users stop opening my app after day 1. Audit the habit loop."
+- "Design the habit loop for my new flashcard app before we build the UI."
+- "Write the push notifications and permission flow for my habit tracker."
+- "What should our habit moment be, and which retention events should we track?"
+- "Add friend challenges to my quiz game so people come back daily."
+
 ## The six levers
 
 Six levers, in the order a user meets them. The first three get the user in; the last three keep them coming back.
@@ -46,28 +54,43 @@ Pick the mode from the request:
 | The request | Mode |
 |---|---|
 | New app, or a new feature that should become a habit | **Design** (steps 1 to 5) |
-| Existing app: "why don't people come back", retention review | **Audit** (step 1, the audit reference, then steps 3 to 5) |
-| Push notifications, reminders, re-engagement copy | **Notify** |
-| Habit moment, retention metrics, analytics events | **Measure** |
+| Existing app: "why don't people come back", retention review | **Audit** (step 1, the audit reference, then steps 2 to 5) |
+| Push notifications, reminders, re-engagement copy | **Notify** (step 1, then the notifications reference) |
+| Habit moment, retention metrics, analytics events | **Measure** (step 1, then the metrics reference) |
 
 The steps:
 
 1. **Read the app.** Codebase, docs, store listing, and any earlier plan. Pin down the user, the feeling (the internal trigger), and the core action, one line each.
-2. **Write the habit plan** to `docs/habit-plan.md`. Every lever gets a decision (a named screen, control, default, reward or notification) plus the metric that will show whether it works.
-3. **Lay it out with `/design`.** For a new app, or an app with no design board, the plan's Board brief creates a new board covering the first session, the core loop, every end/empty/error state, and the notification surfaces. For an app that already has a board, `/design` adds a `Habit loop` flow to it and redesigns existing screens only where the plan changes them.
-4. **Review the board against the levers.** Score each lever; anything below 2 goes back to `/design` with a specific fix, and every screen must end in a next action.
+2. **Write the habit plan** to `docs/habit-plan.md`. Every lever gets a decision (a named screen, control, default, reward or notification) plus the metric that will show whether it works, and the first-session order and paywall timing are filled in.
+3. **Lay it out with `/design`.** For a new app, or an app with no design board, the plan's Board brief creates a new board covering the first session, the core loop, every end/empty/error state, and the notification surfaces. For an app that already has a board, `/design` adds a `Habit loop v<N>` flow to it and redesigns existing screens only where the plan changes them.
+4. **Review the board against the levers.** Score each lever; anything below 2 goes back to `/design` with a specific fix, for at most 2 rounds, and every screen must end in a next action.
 5. **Store and legal check.** A short checklist of what gets an app rejected or creates legal exposure.
 
-Every run ends with the path to `docs/habit-plan.md`, the board link, the lever scores, and the three changes most likely to move day-1 retention.
+Creating or extending the design board uses Claude's `/design` (Design artifacts). In other agents the plan gets a Screens section instead, and step 4 scores that list.
+
+Every run ends with its mode's output: the path to `docs/habit-plan.md` plus, for Design and Audit, the board link (or Screens section), the lever scores and the three changes most likely to move day-1 retention; for Notify, the Notifications table; for Measure, the habit moment and the event list.
+
+## Sample output
+
+An excerpt of the Levers table in a generated `docs/habit-plan.md` (fictional daily puzzle app):
+
+| Lever | Decision | Screen / surface | Metric |
+|---|---|---|---|
+| Lazy thumb | App opens straight into today's puzzle; Start button pinned bottom, 56pt; a puzzle counts as done at the first correct row | Today | Seconds from open to first move |
+| Paved path | Difficulty defaults to Medium, reminder time defaults to the user's first-solve hour, no account until the first streak day | Onboarding, Settings | % who keep each default |
+| Bottomless pit | Puzzle-complete screen leads to "Next puzzle" and "Set tomorrow's reminder"; empty archive offers yesterday's puzzle | Result, Archive | Puzzles per session |
 
 `SKILL.md` holds the workflow and the routing. Everything topic-specific loads on demand from `references/`:
 
 | File | Owns |
 |---|---|
 | `references/levers.md` | Each lever's mechanism, evidence, the decisions it forces, and iOS patterns. Loaded for every Design or Audit run |
+| `references/first-session.md` | The order of the first session (asks, account, notifications) and paywall timing against the habit moment |
 | `references/audit.md` | The scoring rubric for the six levers, and the audit of an existing app's retention and dead ends |
 | `references/notifications.md` | Push notifications, reminders and re-engagement copy (Notify mode) |
 | `references/metrics.md` | The habit moment, D1/D7/D30 retention, and analytics events (Measure mode) |
+| `references/social.md` | Social and multiplayer loops: friend challenges, async turns, leaderboards, Game Center |
+| `references/web-android.md` | Web and Android equivalents of the iOS patterns |
 | `references/compliance.md` | The store and legal checklist: marketing push opt-in, random paid rewards, Kids Category, EU/FTC dark-pattern rules |
 | `references/plan-template.md` | The template for `docs/habit-plan.md`, including the Board brief |
 
@@ -83,7 +106,7 @@ Rules that keep the two moves cheap:
 
 - **One topic per file, single source of truth.** If a rule could plausibly live in two files, pick one owner and never state it in the other. `audit.md` is the deliberate exception: it *checks* rules that other files own, so it names them without redefining them.
 - **State positives.** Write the move to make, not the mistake to avoid. Every rule must change what an agent does versus its default.
-- **Make decisions, not principles.** "Make onboarding easy" is a principle; "app opens straight into today's puzzle, Start button pinned bottom, 72pt" is a decision.
+- **Make decisions, not principles.** "Make onboarding easy" is a principle; "app opens straight into today's puzzle, Start button pinned bottom, 56pt" is a decision.
 - **Keep `SKILL.md` short.** It is the router, not the manual. Anything lever-specific or topic-specific belongs in `references/`.
 - **Watch the density budget.** When a reference file grows past roughly 1,200 words, split its largest section into its own `references/<topic>.md` and add a routing row. That is Move 2.
 

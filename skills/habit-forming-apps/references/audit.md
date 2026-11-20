@@ -15,7 +15,7 @@ Score only what you can observe in the code, the board, or a run of the app.
 | Bottomless pit | Dead ends on completion, empty or error | Some states lead on, some don't | Every state has a next action | Every state leads to a specific next action, tracked in events |
 | Piggy bank | Nothing accumulates | History exists, not shown | History visible and used to improve the product | Users see what they've built, it is exportable, and invested users' D30 is measured |
 
-A lever below 2 goes back for a fix (SKILL.md step 4).
+A lever below 2 goes back to `/design` for a fix (SKILL.md step 4).
 
 ## 2. Dead-end inventory
 
@@ -43,10 +43,8 @@ rg "UNUserNotificationCenter|requestAuthorization|UNNotificationRequest|UNCalend
 # Widgets, Live Activities, intents
 rg "WidgetKit|ActivityKit|AppIntent|AppShortcutsProvider" --type swift
 # Onboarding choices without defaults
-rg "@State.*(selected|choice)\w*\s*(:|=)\s*(nil|\"\")" --type swift
+rg '@State.*(selected|choice)\w*\s*(:[^=]*)?=\s*(nil|"")' --type swift .
 rg "OnboardingView|Onboarding" --type swift -l
-# Lists that stop
-rg "ForEach|List\(" --type swift
 # Streak or reward logic
 rg -i "streak|reward|xp|level" --type swift
 ```
@@ -60,7 +58,7 @@ What to check in the hits:
 
 ## 4. Output to append to `docs/habit-plan.md`
 
-Add a row to the **Audit scores** table:
+If `docs/habit-plan.md` does not exist, create it from [`plan-template.md`](plan-template.md) first. Then add a row to the **Audit scores** table:
 
 ```markdown
 | 2026-11-20 | 1 | 2 | 1 | 0 | 1 | 2 | Notification permission asked at launch; 6 dead ends |

@@ -25,18 +25,18 @@ Rules:
 - Schedule with `UNCalendarNotificationTrigger` for a daily time, or `UNTimeIntervalNotificationTrigger` for relative delays (such as 22 hours after last open).
 - Send the reminder only if today's core action is not done: cancel with `removePendingNotificationRequests(withIdentifiers:)` when the action completes.
 
-## Permission: prime, then provisional
+## Permission: two stages
 
-1. **Defer the ask** until after the first completed core action, so the user has felt the value.
-2. **Show an in-app priming screen first** with one line on what they will get ("A nudge at 8pm if today's round isn't done") and two buttons: "Turn on reminders" and "Not now". Only "Turn on" calls the system prompt, so a "Not now" never burns the one-shot prompt.
-3. **Start with provisional authorization** to deliver quietly before the user decides:
+**Stage 1, after the first completed core action:** request `.provisional` silently, with no priming screen:
 
 ```swift
 let center = UNUserNotificationCenter.current()
 try await center.requestAuthorization(options: [.alert, .sound, .badge, .provisional])
 ```
 
-   Provisional notifications go to Notification Center with Keep/Turn Off buttons and no prompt. Upgrade to a full prompt once the user engages with them.
+Provisional notifications go quietly to Notification Center with Keep / Turn Off buttons and show no system prompt.
+
+**Stage 2, once the user engages** (opens a provisional notification, sets a reminder time, or reaches the habit moment): show the in-app priming screen ("A nudge at 8pm if today's round isn't done") with "Turn on reminders" and "Not now". Only "Turn on" calls `requestAuthorization(options: [.alert, .sound, .badge])` (no `.provisional`), which shows the system prompt while status is `.provisional`. "Not now" never burns the one-shot prompt. Check status with `await center.notificationSettings()`.
 
 ## Interruption levels
 
@@ -51,6 +51,14 @@ Set `content.interruptionLevel`:
 
 Use `.timeSensitive` rarely; overuse trains users to turn all notifications off.
 
+## Scheduled Summary and Focus
+
+Users with Scheduled Summary on receive `.passive` and `.active` notifications batched at their summary times; only `.timeSensitive` (and communication notifications) break through. So:
+- Read `scheduledDeliverySetting` from `notificationSettings()` and log it (`notif_summary` in [metrics.md](metrics.md)).
+- Set `content.relevanceScore` (0-1) so the reminder ranks high in the summary.
+- Keep the widget as the trigger for those users.
+- Keep reminders `.active`; reserve `.timeSensitive` for windows that really close.
+
 ## Frequency caps
 
 - Cap at 1 per day and 3 per week for non-transactional pushes; start there and adjust from the opt-out metric ([metrics.md](metrics.md)).
@@ -60,7 +68,7 @@ Use `.timeSensitive` rarely; overuse trains users to turn all notifications off.
 
 ## Fallback to widgets
 
-When permission is denied (check `getNotificationSettings`), move the trigger to WidgetKit: a Lock Screen widget (`accessoryRectangular`) showing "Today: not done" and a Home Screen widget with a `Button(intent:)` for the core action. Prompt the user once, in Settings or on the empty state, to add the widget. Use `WidgetCenter.shared.reloadAllTimelines()` after each session so the state is current.
+When permission is denied (check `await center.notificationSettings()`), move the trigger to WidgetKit: a Lock Screen widget (`accessoryRectangular`) showing "Today: not done" and a Home Screen widget with a `Button(intent:)` for the core action. Prompt the user once, in Settings or on the empty state, to add the widget. Use `WidgetCenter.shared.reloadAllTimelines()` after each session so the state is current.
 
 ## Re-engagement for lapsed users
 
@@ -71,11 +79,8 @@ Send one specific reason, not "we miss you":
 - Make each message deep-link to the core action via `userInfo` and `UNNotificationResponse`, so one tap lands on the action, not the home screen.
 - If the first message is unopened, change the reason instead of repeating it.
 
-## Apple 4.5.4: marketing needs opt-in
+## Functional vs marketing pushes
 
-Apple 4.5.4 says push "should not be used for promotions or direct marketing purposes unless customers have explicitly opted in" via consent language in the app UI, with an in-app way to opt out ([guidelines](https://developer.apple.com/app-store/review/guidelines/)). So:
 - Keep two classes: **functional** (reminders and results for something the user set up) and **marketing** (offers, promotions, upsells).
 - Put a separate "Offers and news" toggle, off by default, in the priming screen or Settings, and send marketing only when it is on.
-- Never make push required for the app to function.
-
-**Web/Android.** Web: Web Push needs a user gesture before `Notification.requestPermission()`. Android 13+: request `POST_NOTIFICATIONS` after the first win, and use one notification channel per category.
+- The Apple 4.5.4 rule is owned by [compliance.md](compliance.md).

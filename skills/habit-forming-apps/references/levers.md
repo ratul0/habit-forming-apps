@@ -1,4 +1,4 @@
-Read this for every Design or Audit run: it holds each lever's mechanism, evidence, the decisions the plan must record, and iOS patterns.
+Read this for every Design or Audit run: each lever's mechanism, evidence, decisions to record, and iOS patterns. Web or Android target: see [web-android.md](web-android.md).
 
 # The six levers
 
@@ -21,13 +21,11 @@ Contents: [Itch](#1-itch) · [Lazy thumb](#2-lazy-thumb) · [Paved path](#3-pave
 - App Intents plus `AppShortcutsProvider` expose the core action to Siri, Spotlight and the Action button.
 - Schedule notifications with `UNCalendarNotificationTrigger` at the moment the feeling arises. Copy rules are in [notifications.md](notifications.md).
 
-**Web/Android.** Web: PWA push plus an installable home-screen icon. Android: app widgets (Glance) and notification channels.
-
 ## 2. Lazy thumb
 
 **Mechanism.** Behavior happens when motivation, ability and a prompt coincide (B=MAP). Users on a low-motivation day still act if ability is high, so make the core action one tap and lower the bar for "done". Source: BJ Fogg, [behaviormodel.org](https://behaviormodel.org/).
 
-**Evidence.** Duolingo let one lesson, instead of the full daily goal, extend a streak. It reported a 3.3% relative lift in day-14 retention, +10.5% of daily learners on a streak within 20 days, and over 40% more learners reaching a 7-day streak ([Duolingo blog](https://blog.duolingo.com/improving-the-streak)). "Relative" means 3.3% of the baseline rate, not 3.3 points. Photo logging (snap the plate) versus typed food search is the same idea applied to a calorie tracker: one action replaces a multi-step form.
+**Evidence.** Duolingo let one lesson, instead of the full daily goal, extend a streak. It reported a 3.3% relative lift in day-14 retention, +10.5% of daily learners on a streak within 20 days, and over 40% more learners on a 7+ day streak (a result reported a year later) ([Duolingo blog](https://blog.duolingo.com/improving-the-streak)). "Relative" means 3.3% of the baseline rate, not 3.3 points. Photo logging versus typed food search applies the same idea: one action replaces a multi-step form.
 
 **Decide.**
 - Taps from app open to the core action (target 1).
@@ -39,8 +37,6 @@ Contents: [Itch](#1-itch) · [Lazy thumb](#2-lazy-thumb) · [Paved path](#3-pave
 - Open straight into the core action (no home menu); restore state with `@SceneStorage`.
 - Confirm with `.sensoryFeedback(.success, trigger:)`.
 - Offer the same action from a widget button (`Button(intent:)`) so it takes no app launch.
-
-**Web/Android.** Web: sticky bottom action bar, `100dvh` layout. Android: Material FAB or bottom-anchored button.
 
 ## 3. Paved path
 
@@ -59,13 +55,11 @@ Contents: [Itch](#1-itch) · [Lazy thumb](#2-lazy-thumb) · [Paved path](#3-pave
 - Skip account creation until after the first completed action (Sign in with Apple later).
 - Ask for notification permission after the first win, with `.provisional` authorization (see [notifications.md](notifications.md)).
 
-**Web/Android.** Web: `<input>` defaults and `autocomplete`. Android: `DataStore` defaults and pre-selected `MaterialTimePicker`.
-
 ## 4. Slot machine
 
 **Mechanism.** Rewards that vary in size or timing hold attention better than fixed ones. This traces to Skinner's variable-ratio schedules (Ferster & Skinner, *Schedules of Reinforcement*, 1957).
 
-**Evidence.** Variable-ratio schedules produce the highest, most extinction-resistant response rates in Skinner's work: animals rewarded unpredictably keep responding long after rewards stop. Swipe feeds apply this per swipe. TikTok's own research, as alleged in Kentucky's 2024 complaint, put the habit moment at 260 videos ([NPR](https://www.npr.org/2024/10/11/g-s1-27676/tiktok-redacted-documents-in-teen-safety-lawsuit-revealed)): a countable threshold reached quickly because each swipe is a short pull.
+**Evidence.** Variable-ratio schedules produce the highest, most extinction-resistant response rates in Skinner's work: animals rewarded unpredictably keep responding long after rewards stop. Swipe feeds apply this per swipe.
 
 **Decide.**
 - What varies (reward size, content, surprise bonus) and what stays fixed.
@@ -73,18 +67,16 @@ Contents: [Itch](#1-itch) · [Lazy thumb](#2-lazy-thumb) · [Paved path](#3-pave
 - What still surprises a user on day 30.
 
 **iOS patterns.**
-- Use `.sensoryFeedback(.impact)` and `.phaseAnimator` for reveal moments, with `Canvas`/`TimelineView` confetti.
-- Draw rewards from a seeded distribution you can log and tune.
+- Use `.sensoryFeedback(.impact, trigger: rewardID)` and `.phaseAnimator` for reveal moments, with `Canvas`/`TimelineView` confetti.
+- Draw rewards with GameplayKit `GKMersenneTwisterRandomSource(seed:)` so draws are reproducible and loggable, and tune the distribution.
 - Rotate content with a `WidgetKit` timeline so the widget differs by day.
 - If any variable reward is purchasable, check [compliance.md](compliance.md) first.
-
-**Web/Android.** Web: Web Animations API and `canvas-confetti`. Android: Compose `AnimatedVisibility` and `HapticFeedback`.
 
 ## 5. Bottomless pit
 
 **Mechanism.** Behavior continues until something signals "stop". Removing stopping cues, such as endless feeds and autoplay, extends sessions. Every screen should lead somewhere next.
 
-**Evidence.** Aza Raskin, who created infinite scroll in 2006, has said it wastes enormous time. His own rough estimate runs to hundreds of thousands of human lifetimes spent scrolling ([NPR, 2026](https://www.npr.org/2026/04/07/nx-s1-5775917/why-infinite-scrolls-inventor-wants-to-kill-his-creation)); no primary calculation is published, so cite it as an estimate.
+**Evidence.** Aza Raskin, widely credited with inventing infinite scroll (the credit is disputed; see NPR's editor's note), has said it wastes enormous amounts of time ([NPR, 2026](https://www.npr.org/2026/04/07/nx-s1-5775917/why-infinite-scrolls-inventor-wants-to-kill-his-creation)).
 
 **Decide.**
 - For each end, empty, error and completion state: what the user sees next (the dead-end inventory is in [audit.md](audit.md)).
@@ -97,14 +89,12 @@ Contents: [Itch](#1-itch) · [Lazy thumb](#2-lazy-thumb) · [Paved path](#3-pave
 - Autoplay the next item with `NavigationStack` path push or an `AVQueuePlayer`.
 - Completion screens end in a "Next" button and a `ShareLink`.
 
-**Web/Android.** Web: `IntersectionObserver` for infinite scroll, `<link rel=next>` fallback. Android: Paging 3 with `LazyColumn`.
-
 ## 6. Piggy bank
 
 **Mechanism.** Each input the user makes (data, preferences, creations, history) improves the product and raises the cost of leaving. Source: Hooked's Investment phase.
 
 **Evidence.**
-- IKEA effect: people overvalue what they build, but not if they fail or destroy it. Norton, Mochon & Ariely, *J. Consumer Psychology* 22(3):453-460 (2012), [Harvard DASH PDF](https://dash.harvard.edu/bitstream/handle/1/12136084/norton%20mochon%20ariely%20third%20round[1].pdf).
+- IKEA effect: people overvalue what they build, but not if they fail or destroy it. Norton, Mochon & Ariely, *J. Consumer Psychology* 22(3):453-460 (2012), [Harvard DASH](https://dash.harvard.edu/handle/1/12136084).
 - Netflix's own estimate is that personalization and recommendation are worth over $1B a year, mainly through lower churn. It is a self-reported estimate. Gomez-Uribe & Hunt, *ACM TMIS* 6(4), 2015, [PDF](https://gwern.net/doc/reinforcement-learning/exploration/2015-gomezuribe.pdf).
 
 **Decide.**
@@ -117,8 +107,6 @@ Contents: [Itch](#1-itch) · [Lazy thumb](#2-lazy-thumb) · [Paved path](#3-pave
 - Show progress on a profile screen using `Charts`.
 - Surface it in a widget ("Day 12, 34 puzzles solved").
 - Offer an export (`ShareLink`, `Transferable`).
-
-**Web/Android.** Web: IndexedDB plus account sync. Android: Room plus Backup/Auto Backup.
 
 ## Pairs with
 

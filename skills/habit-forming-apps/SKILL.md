@@ -1,10 +1,10 @@
 ---
 name: habit-forming-apps
-description: Design or audit the daily-habit loop of an app before and alongside its UI — triggers and notifications, a one-tap core action, defaults, variable rewards, no dead ends, and stored value that makes leaving costly. Use when starting a new app, adding a habit loop to an existing app, planning a first session, auditing retention or day-1 drop-off, writing push notifications, adding streaks, rewards or feeds, or defining a habit moment and D1/D7/D30 metrics. iOS-first; applies to web and Android.
+description: "Design or audit an app's habit loop, the retention engine behind why users open it, act in one tap and come back tomorrow: triggers and push notifications, defaults, variable rewards, no dead ends, stored value, and the habit moment. Use when starting a new app or habit feature, when users churn or don't return after day 1, when asked to make an app sticky, addictive or more engaging, when writing push or re-engagement notifications, when designing streak, reward, feed or social-challenge mechanics, or when defining D1/D7/D30 retention metrics and analytics events. iOS-first; applies to web and Android."
 license: MIT
 metadata:
   author: ratul0
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Habit-forming apps
@@ -24,7 +24,7 @@ Six levers, in the order a user meets them. The first three get the user in; the
 | 5 | **Bottomless pit** | Where does every screen — including "done", "empty" and "error" — lead next? |
 | 6 | **Piggy bank** | What would the user lose by deleting the app today? |
 
-The **habit moment** ties them together: the countable threshold of core actions after which users stay (TikTok's internal research, as alleged in Kentucky's 2024 lawsuit, put it at 260 videos). Every plan names one.
+The **habit moment** ties them together: the countable threshold of core actions after which users stay. Every plan names one.
 
 [`references/levers.md`](references/levers.md) holds each lever's mechanism, evidence, the decisions it forces, and iOS patterns. Load it for every Design or Audit run.
 
@@ -33,9 +33,17 @@ The **habit moment** ties them together: the countable threshold of core actions
 | The request | Mode | Run |
 |---|---|---|
 | New app, or a new feature that should become a habit | **Design** | Steps 1 → 5 |
-| Existing app: "why don't people come back", retention review | **Audit** | Step 1, then [`references/audit.md`](references/audit.md), then steps 3 → 5 |
-| Push notifications, reminders, re-engagement copy | **Notify** | [`references/notifications.md`](references/notifications.md) |
-| Habit moment, retention metrics, analytics events | **Measure** | [`references/metrics.md`](references/metrics.md) |
+| Existing app: "why don't people come back", retention review | **Audit** | Step 1, then [`references/audit.md`](references/audit.md), then steps 2 → 5 (step 2 turns the audit's fix list into lever decisions and the Board brief) |
+| Push notifications, reminders, re-engagement copy | **Notify** | Step 1, then [`references/notifications.md`](references/notifications.md); writes the plan's Notifications section |
+| Habit moment, retention metrics, analytics events | **Measure** | Step 1, then [`references/metrics.md`](references/metrics.md); writes the habit moment and the Metrics and events section |
+
+Also load:
+
+| When | Load |
+|---|---|
+| Step 2 of every Design or Audit run | [`references/first-session.md`](references/first-session.md) |
+| The app has friends, multiplayer, challenges, leaderboards or sharing | [`references/social.md`](references/social.md) |
+| The target is web or Android (`levers.md` is iOS-only) | [`references/web-android.md`](references/web-android.md) |
 
 ## 1. Read the app
 
@@ -51,33 +59,51 @@ Infer from the code and docs first. Ask the user only for what stays ambiguous, 
 
 ## 2. Write the habit plan
 
-Create or update `docs/habit-plan.md` in the project from [`references/plan-template.md`](references/plan-template.md). Work through the six levers in order using `references/levers.md`, then the habit moment and metrics using `references/metrics.md`.
+Create or update `docs/habit-plan.md` in the project from [`references/plan-template.md`](references/plan-template.md). Work through the six levers in order using `references/levers.md`, then first-session order and paywall timing using `references/first-session.md`, then the habit moment and metrics using `references/metrics.md`.
 
-Every lever gets a **decision**, not a principle: a named screen, control, default, reward, or notification, plus the metric that will show whether it works. "Make onboarding easy" is a principle; "app opens straight into today's puzzle, Start button pinned bottom, 72pt" is a decision.
+Every lever gets a **decision**, not a principle: a named screen, control, default, reward, or notification, plus the metric that will show whether it works. "Make onboarding easy" is a principle; "app opens straight into today's puzzle, Start button pinned bottom, 56pt" is a decision.
 
-Done when every lever row and the habit moment have a decision and a metric, and the plan's **Board brief** section lists the screen-level requirements step 3 needs.
+Done when every lever row and the habit moment have a decision and a metric, the plan's **First session** section is filled, and the plan's **Board brief** section lists the screen-level requirements step 3 needs.
 
 ## 3. Lay it out with /design
 
-The plan becomes a design board through the `/design` skill. Pick the branch:
+The plan becomes a design board through Claude's `/design` skill.
 
-- **New app, or existing app with no design board** → run `/design` to create a new board that lays out the whole UI/UX from the plan: the first session, the core loop, every end/empty/error state, and the notification surfaces.
-- **Existing app with a design board** → run `/design` on that board to add a new flow named `Habit loop v<N>`. Redesign existing screens only where the plan changes them, and keep them in the board's existing design system.
+**Find the board**, in this order:
 
-To find an existing board, check `docs/habit-plan.md`, `CLAUDE.md`, `docs/`, and the Design artifacts in the user's gallery. If more than one could be it, ask.
+1. The board link at the top of `docs/habit-plan.md`.
+2. Board links in `CLAUDE.md`, `AGENTS.md` or `docs/`.
+3. In Claude, the user's Design artifacts (Artifact tool, action `list`, type `Design`), matched by app name.
 
-Pass `/design` the plan's Board brief verbatim. For screen-level craft (layout, polish, paywalls, reward screens), the `ios-app-design` skill applies when it is installed. Record the board link at the top of `docs/habit-plan.md`.
+Exactly one candidate → use it. Several → ask the user, multiple choice, recommended first. None → the new-board branch.
+
+**Pick the branch:**
+
+- **New board** → run `/design` to create a board that lays out the whole UI/UX from the plan: the first session, the core loop, every end/empty/error state, and the notification surfaces.
+- **Existing board** → run `/design` on that board to add a flow named `Habit loop v<N>`, where N is one more than the highest existing `Habit loop v<k>` flow on that board, or 1 if none. Redesign existing screens only where the plan changes them, and keep them in the board's existing design system.
+
+Pass `/design` the plan's Board brief verbatim. Boundary: screen layout, visual polish, paywall screens and reward-screen craft belong to the `ios-app-design` skill when installed; this skill decides what the loop is and when each piece appears.
+
+**Fallback** when `/design` is not available (another agent, or no Design artifacts): write a `## Screens` section in the plan instead, one entry per screen: its job, its primary action, and the next action from its end, empty, error and completion states. Step 4 then scores that list instead of a board.
+
+Done when the board link (or "see Screens") is recorded at the top of `docs/habit-plan.md` and every Board brief line names the board frame (or Screens entry) that satisfies it.
 
 ## 4. Review the board against the levers
 
-Score the board with the rubric in [`references/audit.md`](references/audit.md). Every lever scoring below 2 goes back to `/design` with the specific fix. Then walk every screen on the board once more and confirm each one ends in a next action.
+Score the board (or the Screens list) with the rubric in [`references/audit.md`](references/audit.md). Every lever scoring below 2 goes back to `/design` (or into the Screens section) with the specific fix, for at most 2 fix rounds. Then walk every screen once more and confirm each one ends in a next action.
 
-Done when every lever scores 2 or higher and the dead-end list is empty. Append the scores and fix list to the plan in the format `references/audit.md` gives.
+Done when every lever scores 2 or higher and the dead-end list is empty, or after round 2, when a lever still below 2 is recorded in the plan's fix list as open, with the reason. Append the scores and fix list to the plan in the format `references/audit.md` gives.
 
 ## 5. Store and legal check
 
-Run the short checklist in [`references/compliance.md`](references/compliance.md) against the plan. It covers only what gets an app rejected or creates legal exposure: marketing push without opt-in, random paid rewards without odds, Kids Category rules, and EU/FTC dark-pattern rules. Record each flag and its fix in the plan's Compliance section.
+Run the checklist in [`references/compliance.md`](references/compliance.md) against the plan. It covers only what gets an app rejected or creates legal exposure: marketing push without opt-in, random paid rewards without odds, Kids Category rules, and EU/FTC dark-pattern rules.
+
+Done when every line of the checklist is marked pass, flag or n/a in the plan's Compliance section, and every flag has a fix.
 
 ## Output
 
-End every run with: the path to `docs/habit-plan.md`, the board link (Design and Audit modes), the lever scores, and the three changes most likely to move day-1 retention, highest impact first.
+End every run with the items for its mode:
+
+- **Design / Audit:** the path to `docs/habit-plan.md`, the board link or Screens section, the lever scores, and the three changes most likely to move day-1 retention, highest impact first.
+- **Notify:** the plan path and the Notifications table.
+- **Measure:** the plan path, the habit moment statement and the event list.
